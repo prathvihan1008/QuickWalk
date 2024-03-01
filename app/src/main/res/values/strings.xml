@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Quick Walk</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fast_forward">Fast Forward</string>
+    <string name="next_track">Next Track</string>
+    <string name="pause">Pause</string>
+    <string name="previous_track">Previous Track</string>
+    <string name="rewind">Rewind</string>
+    <string name="pull_up">pull up</string>
+    <string name="steps_label">Steps:</string>
+    <string name="timer_format">00:%02d</string>
+    <string name="splash_image_description">spash screen</string>
+    <string name="start">Start</string>
+    <string name="pause_resume_icon_description">pause resume</string>
+    <string name="stop_button_description">stop button</string>
+    <string name="min">min</string>
+    <string name="_00_00">00:00</string>
+    <string name="cal">cal</string>
+    <string name="_0_00">0.00</string>
+    <string name="calories_icon_description">calories icon</string>
+    <string name="miles">miles</string>
+    <string name="distance_icon_description">distance icon</string>
+    <string name="steps_goal">steps(goal)</string>
+    <string name="goal_icon_description">goal icon</string>
+    <string name="_0">0</string>
+    <string name="steps_icon_description">steps icon</string>
+    <string name="step_counter">step counter</string>
+    <string name="speed_icon_description">speed icon</string>
+    <string name="m_s">m/s</string>
+    <string name="distance_miles">distance(miles)</string>
+    <string name="_0_0_miles">0.0</string>
+    <string name="date">Date:</string>
+    <string name="time">Time:</string>
+    <string name="steps">Steps:</string>
+    <string name="distance">Distance:</string>
+    <string name="calories">Calories:</string>
+    <string name="saved_data_will_appear_here">Saved Data will appear here</string>
+
+</resources>

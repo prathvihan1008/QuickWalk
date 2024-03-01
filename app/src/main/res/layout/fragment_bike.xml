@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bike"
+    android:orientation="vertical"
+    tools:context="com.prathvihan1008.quickwalk.fragments.BikeFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:text="@string/step_counter"
+        android:textColor="#3a9bdc"
+        android:textSize="20sp"
+        android:textFontWeight="800" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="245dp"
+            android:layout_marginTop="105dp">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="298dp"
+                android:layout_height="298dp"
+                android:layout_gravity="center"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:max="8000"
+                android:background="@drawable/circular_shape"
+                android:progressDrawable="@drawable/circular_progress_bar" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="5dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/distance"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/distance_icon_description"
+
+                        android:layout_marginEnd="23dp"/>
+
+                    <TextView
+                        android:id="@+id/distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text="@string/_0_0_miles"
+                        android:textColor="@color/custom_primary"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/goal"
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="@string/goal_icon_description"
+
+                        android:layout_weight="1"/>
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <Spinner
+                            android:id="@+id/spinnerDisGoal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="16dp"
+                            android:textColor="#000000"
+                            android:background="@drawable/goal_custom_spinner_background"
+
+
+                            android:dropDownHeight="5dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="@string/distance_miles"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            >
+
+            <LinearLayout
+
+                android:layout_width="150dp"
+                android:layout_height="100dp"
+                android:orientation="vertical">
+
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/speed"
+                        android:contentDescription="@string/speed_icon_description"
+
+                        android:layout_marginEnd="5dp"/>
+
+                    <TextView
+                        android:id="@+id/speed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="@string/_0_00"
+                        android:textSize="20sp"
+                        android:textColor="#000000"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/m_s"
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/calories"
+                        android:contentDescription="@string/calories_icon_description"
+
+                        android:layout_marginEnd="5dp"/>
+
+                    <TextView
+                        android:id="@+id/calories"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="@string/_0_00"
+                        android:textSize="20sp"
+                        android:textColor="#000000"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cal"
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+
+                <!-- Timer TextView -->
+
+
+
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginStart="50dp">
+
+                <TextView
+                    android:id="@+id/tvTimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_00_00"
+                    android:textColor="#000000"
+                    android:textSize="50sp" />
+
+                <TextView
+                    android:id="@+id/tvUnittime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/min"
+                    android:textColor="#000000"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="1dp"
+            app:cardCornerRadius="8dp"
+            app:cardUseCompatPadding="true"
+            android:padding="3dp">
+
+            <!-- Horizontal LinearLayout -->
+            <!-- Horizontal LinearLayout -->
+            <LinearLayout
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingHorizontal="30dp">
+
+                <ImageView
+                    android:id="@+id/stopbtn"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/stop_svgrepo_com"
+                    android:clickable="true"
+
+
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="@string/stop_button_description"
+
+                    android:layout_marginEnd="25dp"
+                    android:layout_weight="1"
+                    android:focusable="true" />
+
+                <!-- ImageView for Pause/Resume -->
+                <ImageView
+                    android:id="@+id/ivPauseResume"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/resume"
+                    android:clickable="true"
+
+                    android:layout_gravity="center_vertical"
+
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/pause_resume_icon_description"
+
+                    android:focusable="true" /> <!-- Weight is set to 1 -->
+
+                <!-- Start Running TextView -->
+                <TextView
+                    android:id="@+id/notation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/start"
+                    android:textColor="?attr/text_color"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"/> <!-- Weight is set to 1 -->
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+
+
+
+
+
+
+
+
+
+    </LinearLayout>
+
+
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        ads:adSize="LARGE_BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+    </com.google.android.gms.ads.AdView>
+</LinearLayout>

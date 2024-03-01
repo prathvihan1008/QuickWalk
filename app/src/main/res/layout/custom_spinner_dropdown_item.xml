@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- custom_spinner_dropdown_item.xml -->
+<!-- custom_spinner_item.xml -->
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="34sp"
+    android:gravity="center_vertical"
+    android:text="goal"
+    android:textColor="#000000"
+
+
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"/>
+
+

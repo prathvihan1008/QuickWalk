@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar1"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+     />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/idTVSelectedDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Date"
+            android:textAlignment="center"
+            android:textColor="?attr/text_color"
+            android:textSize="30sp"
+            android:textStyle="bold|italic" />
+
+        <View
+            android:layout_width="5dp"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/idBtnPickDate"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Pick Date"
+            android:textAllCaps="false"
+            android:contentDescription="Calender"
+            android:src="@drawable/calender_icon"/>
+
+    </LinearLayout>
+
+
+    <!-- Use a FrameLayout to layer views with different elevations -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/blue"
+        android:layout_marginTop="20sp"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/saved_data_will_appear_here"
+            android:textSize="20sp"
+
+
+            android:textColor="?attr/text_color"
+
+           />
+
+
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+       >
+
+        <!-- RelativeLayout with elevated background -->
+
+
+            <!-- RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:background="?attr/backgroundColor"
+               />
+
+
+
+    </FrameLayout>
+
+</LinearLayout>

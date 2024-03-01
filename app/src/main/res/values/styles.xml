@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- styles.xml -->
+<resources>
+
+    <style name="Apptheme" parent="Theme.Material3.DayNight">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">?attr/colorPrimary</item>
+
+        <!-- Include ActionBar (Toolbar) -->
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+    </style>
+
+</resources>

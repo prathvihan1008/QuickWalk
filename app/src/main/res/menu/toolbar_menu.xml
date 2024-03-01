@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/menu/toolbar_menu.xml -->
+<!-- res/menu/toolbar_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <!-- Transparent item at the extreme left -->
+    <item
+        android:id="@+id/action_bars"
+        android:title=""
+        android:icon="@drawable/stats"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_transparent2"
+        android:title=""
+        android:icon="@android:color/transparent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_transparent3"
+        android:title=""
+        android:icon="@android:color/transparent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_transparent4"
+        android:title=""
+        android:icon="@android:color/transparent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_transparent5"
+        android:title=""
+        android:icon="@android:color/transparent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_transparent6"
+        android:title=""
+        android:icon="@android:color/transparent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_sound"
+
+        android:icon="@drawable/sound_on"
+        android:title="Logout"
+
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_transparent7"
+        android:title=""
+        android:icon="@android:color/transparent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:showAsAction="always"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</menu>
+

@@ -1,0 +1,51 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <!-- Home Button -->
+
+    <!-- Spacer View -->
+
+    <!-- CardView with Spinner Layout -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <!-- Use a transparent drawable for spinnerItemIcon -->
+            <ImageView
+                android:id="@+id/spinnerItemIcon"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@drawable/icon1"
+                android:contentDescription="@null"/>
+
+            <TextView
+                android:id="@+id/spinnerItemText"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Default"
+                android:textSize="20dp"
+                android:layout_marginStart="8dp"/>
+
+            <!-- Spinner -->
+
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
