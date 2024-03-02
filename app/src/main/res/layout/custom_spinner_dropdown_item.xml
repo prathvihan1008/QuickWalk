@@ -9,7 +9,7 @@
     android:textSize="34sp"
     android:gravity="center_vertical"
     android:text="goal"
-    android:textColor="#000000"
+    android:textColor="?attr/text_color"
 
 
     android:paddingStart="16dp"

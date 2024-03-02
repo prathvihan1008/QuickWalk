@@ -10,7 +10,7 @@
     </item>
     <!-- Arrow -->
     <item
-        android:left="90dp"
+        android:left="105dp"
         android:top="8dp"
 
         android:drawable="@drawable/arrow_drop" />

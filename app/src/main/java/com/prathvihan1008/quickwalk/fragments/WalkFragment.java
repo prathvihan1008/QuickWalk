@@ -5,6 +5,8 @@ import static android.content.Context.SENSOR_SERVICE;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,7 +17,9 @@ import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -39,6 +43,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.prathvihan1008.quickwalk.MainActivity;
 import com.prathvihan1008.quickwalk.MyDBHelper;
 import com.prathvihan1008.quickwalk.R;
 import com.prathvihan1008.quickwalk.TTSListener;
@@ -77,6 +82,9 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
     private FrameLayout overlay;
     private AdView mAdView;
     private AdView mAdView1;
+    private View glassyView;
+
+
 
 
     @Override
@@ -94,9 +102,33 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         stopbtn = view.findViewById(R.id.stopbtn);
 
         progressBar = view.findViewById(R.id.progressBar);
+        glassyView = view.findViewById(R.id.glassyView);
+
+
+        progressBar.setMax(100);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            int progress = 0;
+
+            @Override
+            public void run() {
+                if (progress <= 100) {
+                    progressBar.setProgress(progress);
+                    progress++;
+                    handler.postDelayed(this, 1); // Adjust the delay to control the speed of the animation
+                } else {
+                    // Animation complete, reset progress
+
+                    progress = 0;
+                    progressBar.setProgress(progress);
+                }
+            }
+        }, 1000); // Delay to start the animation, adjust as needed
+
+
 
         progressBar.setMax(5000);
-        progressBar.setProgress(0);
+        progressBar.setProgress(1);
 
         steps = view.findViewById(R.id.steps);
         steps.setText(String.valueOf(0));
@@ -111,7 +143,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
         // Generating steps from 50 to 10000 with a gap of 500
         int minSteps = 50;
-        int maxSteps = 10000;
+        int maxSteps = 20000;
         int gap = 500;
         String[] stepsArray = new String[(maxSteps - minSteps) / gap + 1];
 
@@ -132,6 +164,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
                 int selectedStepsInt = Integer.parseInt(selectedSteps);
 
                 // Update ProgressBar max value
+
                 progressBar.setMax(selectedStepsInt);
 
                 // You can also update the ProgressBar progress if needed
@@ -242,6 +275,17 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
             }
         });
 
+        glassyView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume touch events to prevent propagation to underlying views
+                return true;
+            }
+        });
+
+
+
+
 
 
 
@@ -345,6 +389,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
     public void onPauseResumeClick(View view) {
 
+
         if (isSensorRegistered) {
 
             unregisterSensor();
@@ -358,7 +403,13 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
         if (isRunning) {
             // Pause
+
             isRunning = false;
+
+            stopbtn.setVisibility(View.VISIBLE);
+            glassyView.setVisibility(View.INVISIBLE);
+
+
             handler.removeCallbacks(updateTimerTask);
             ivPauseResume.setImageResource(R.drawable.resume);
             notation.setText("Start");
@@ -367,6 +418,11 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
 
             isRunning = true;
+            glassyView.setVisibility(View.VISIBLE);
+            adjustTransparency();
+
+            stopbtn.setVisibility(View.INVISIBLE);
+
             startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
             handler.post(updateTimerTask);
             ivPauseResume.setImageResource(R.drawable.pause1);
@@ -374,8 +430,23 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         }
     }
 
+    private void adjustTransparency() {
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+            // Dark theme
+            glassyView.setBackgroundColor(Color.parseColor("#2EFFFFFF")); // Semi-transparent dark color
+        } else {
+            // Light theme
+            glassyView.setBackgroundColor(Color.parseColor("#2E000000")); // Semi-transparent light color
+        }
+    }
+
+
+
+
     public void onStopClick(View view) {
         // Reset timer and step count
+
         isRunning = false;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -408,6 +479,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
                 goalReached = false;
 
                 ivPauseResume.setImageResource(R.drawable.resume);
+
             }
         });
 
@@ -459,8 +531,26 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         String savingTime = sdfTime.format(new Date());
 
         dbHelper.addData(time, steps, distance, calories, currentDate, savingTime);
+        showToast("Data saved");
+      //  Toast.makeText(getContext(),"Data Saved ",Toast.LENGTH_LONG).show();
 
         // Optionally, you can perform additional actions after insertion
+    }
+
+    private void showToast(String text){
+      //  LayoutInflater inflater = getLayoutInflater();
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.custom_toast_layout, null);
+
+// Customize the layout, e.g., set text, background, etc.
+        TextView textView = view.findViewById(R.id.toasttext);
+        textView.setText(text);
+
+// Create and display the Toast
+        Toast toast = new Toast(getContext());
+        toast.setGravity(Gravity.CENTER, 0, 0); // Set gravity to center of the screen
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(view);
+        toast.show();
     }
 
 
@@ -553,31 +643,24 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
             if ((progressBar.getProgress() >= progressBar.getMax() / 2.0) && !halfgoalReached) {
                 // Create a custom Toast with longer duration
                 halfgoalReached = true;
-                Toast customToast = Toast.makeText(getContext(), " Half the Goal achieved!", Toast.LENGTH_LONG);
+
                 // onFitnessGoalCompleted();
                 speakText("Well Done!! Half of your fitness goal is completed. Keep walking!");
+                showToast("Half the goal reached");
 
                 // Set a custom view to the Toast (you can design your own layout)
-                View view = LayoutInflater.from(getContext()).inflate(R.layout.custom_toast_layout, null);
-                customToast.setView(view);
 
-                // Show the custom Toast
-                customToast.show();
             }
 
             if ((progressBar.getProgress() >= progressBar.getMax()) && !goalReached) {
                 // Create a custom Toast with longer duration
                 goalReached = true;
-                Toast customToast = Toast.makeText(getContext(), " Half the Goal achieved!", Toast.LENGTH_LONG);
-                // onFitnessGoalCompleted();
                 speakText("Congratulations! your fitness goal is completed.!");
+                showToast("Goal reached.");
 
-                // Set a custom view to the Toast (you can design your own layout)
-                View view = LayoutInflater.from(getContext()).inflate(R.layout.custom_toast_layout, null);
-                customToast.setView(view);
+                saveDataToDB();
 
-                // Show the custom Toast
-                customToast.show();
+
             }
 
 

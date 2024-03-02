@@ -1,10 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
+    android:background="?attr/backgroundColor"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/glassyView"
+        android:layout_width="match_parent"
+        android:layout_height="520dp"
+        android:background="#9B000000"
+        android:visibility="gone"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/jog"
+
+        android:scaleType="centerCrop" />
+<LinearLayout
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/jog"
+
     android:orientation="vertical"
     tools:context="com.prathvihan1008.quickwalk.fragments.JogFragment">
 
@@ -76,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <ImageView
-                        android:layout_width="0dp"
+                        android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:src="@drawable/goal"
                         android:layout_gravity="center_vertical"
@@ -97,7 +120,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="48dp"
                             android:layout_marginTop="16dp"
-                            android:textColor="#000000"
+                            android:textColor="?attr/text_color"
                             android:background="@drawable/goal_custom_spinner_background"
 
                             android:dropDownHeight="5dp" />
@@ -107,7 +130,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:text="@string/steps_goal"
-                            android:textColor="#000000"
+                            android:textColor="?attr/text_color"
                             android:textSize="14sp" />
 
 
@@ -152,7 +175,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:text="@string/_0_00"
-                        android:textColor="#000000"
+                        android:textColor="?attr/text_color"
                         android:textSize="20sp"
                         android:layout_marginRight="10dp"
                         />
@@ -161,7 +184,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/miles"
-                        android:textColor="#000000"
+                        android:textColor="?attr/text_color"
                         android:textSize="14sp" />
 
                 </LinearLayout>
@@ -188,14 +211,14 @@
                         android:layout_marginLeft="10dp"
                         android:text="@string/_0_00"
                         android:textSize="20sp"
-                        android:textColor="#000000"
+                        android:textColor="?attr/text_color"
                         android:layout_marginRight="10dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/cal"
-                        android:textColor="#000000"
+                        android:textColor="?attr/text_color"
                         android:textSize="14sp" />
 
                 </LinearLayout>
@@ -222,7 +245,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/_00_00"
-                    android:textColor="#000000"
+                    android:textColor="?attr/text_color"
                     android:textSize="50sp" />
 
                 <TextView
@@ -245,15 +268,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="1dp"
+            android:layout_marginTop="10dp"
             app:cardCornerRadius="8dp"
             app:cardUseCompatPadding="true"
             android:padding="3dp">
 
             <!-- Horizontal LinearLayout -->
             <LinearLayout
-                android:layout_width="250dp"
-                android:layout_height="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:paddingHorizontal="30dp">
@@ -262,7 +285,7 @@
                     android:id="@+id/stopbtn"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/stop_svgrepo_com"
+                    android:src="@drawable/stop_button"
                     android:clickable="true"
                     android:contentDescription="@string/stop_button_description"
 
@@ -271,7 +294,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="25dp"
                     android:layout_weight="1"
-                    android:focusable="true" />
+                    android:focusable="true"
+                    android:visibility="invisible"/>
 
                 <!-- ImageView for Pause/Resume -->
                 <ImageView
@@ -323,10 +347,11 @@
         xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         ads:adSize="LARGE_BANNER"
         ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
     </com.google.android.gms.ads.AdView>
 </LinearLayout>
+</RelativeLayout>

@@ -9,6 +9,7 @@
 
     <!-- Customize the layout as needed -->
     <TextView
+        android:id="@+id/toasttext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Goal reached!"
