@@ -2,6 +2,8 @@ package com.prathvihan1008.quickwalk.fragments;
 
 import static android.content.Context.SENSOR_SERVICE;
 
+import static java.lang.Boolean.TRUE;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -12,6 +14,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
@@ -78,11 +81,15 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
     public static final String PREFS_NAME = "MyPref1";
     public static final String FRAGMENT_LOADED_KEY = "FragmentLoaded";
     public static boolean isFirstTimeLoaded;
-    private TextView countdownTextView;
+
     private FrameLayout overlay;
     private AdView mAdView;
     private AdView mAdView1;
     private View glassyView;
+    private TextView countdownText;
+    private boolean flag=true;
+    private boolean isButtonEnabled = true;
+
 
 
 
@@ -103,6 +110,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
         progressBar = view.findViewById(R.id.progressBar);
         glassyView = view.findViewById(R.id.glassyView);
+        countdownText = view.findViewById(R.id.countdown_text);
 
 
         progressBar.setMax(100);
@@ -199,12 +207,16 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
             }
         });*/
 
-        ivPauseResume.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onPauseResumeClick(v);
-            }
-        });
+
+            ivPauseResume.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    if(isButtonEnabled){
+                    onPauseResumeClick(v);}
+                }
+            });
+
 
         resetSteps();
         loadData();
@@ -420,11 +432,24 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
             isRunning = true;
             glassyView.setVisibility(View.VISIBLE);
             adjustTransparency();
+            if(flag) {
+                isButtonEnabled=false;
+                countdownText.setVisibility(View.VISIBLE);
+                startCountdown();
+                flag=false;
+            }
+
+            else {
+
+                 startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
+                handler.post(updateTimerTask);
+
+            }
 
             stopbtn.setVisibility(View.INVISIBLE);
 
-            startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
-            handler.post(updateTimerTask);
+           // startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
+            //handler.post(updateTimerTask);
             ivPauseResume.setImageResource(R.drawable.pause1);
             notation.setText("Pause");
         }
@@ -439,6 +464,26 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
             // Light theme
             glassyView.setBackgroundColor(Color.parseColor("#2E000000")); // Semi-transparent light color
         }
+    }
+
+    private void startCountdown() {
+        new CountDownTimer(4000, 1000) {
+
+
+            public void onTick(long millisUntilFinished) {
+                countdownText.setText("" + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                isButtonEnabled=true;
+                countdownText.setVisibility(View.GONE);
+                startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
+                handler.post(updateTimerTask);
+                // Continue with normal execution here
+                // For example:
+                // performNormalExecution();
+            }
+        }.start();
     }
 
 

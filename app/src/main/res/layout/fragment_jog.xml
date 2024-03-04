@@ -253,7 +253,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/min"
-                    android:textColor="#000000"
+                    android:textColor="?attr/text_color"
                     android:textSize="12sp" />
 
             </LinearLayout>
@@ -285,7 +285,7 @@
                     android:id="@+id/stopbtn"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/stop_button"
+                    android:src="@drawable/stop"
                     android:clickable="true"
                     android:contentDescription="@string/stop_button_description"
 
@@ -347,11 +347,22 @@
         xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="25dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         ads:adSize="LARGE_BANNER"
         ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
     </com.google.android.gms.ads.AdView>
 </LinearLayout>
+
+
+
+    <TextView
+        android:id="@+id/countdown_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="180sp"
+        android:visibility="invisible"
+        android:layout_centerInParent="true" />
 </RelativeLayout>
