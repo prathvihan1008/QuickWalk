@@ -136,7 +136,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
 
         progressBar.setMax(5000);
-        progressBar.setProgress(1);
+        progressBar.setProgress(0);
 
         steps = view.findViewById(R.id.steps);
         steps.setText(String.valueOf(0));
