@@ -36,5 +36,8 @@
     <string name="distance">Distance:</string>
     <string name="calories">Calories:</string>
     <string name="saved_data_will_appear_here">Saved Data will appear here</string>
+    <string name="sound_on_off">sound on off</string>
+    <string name="stats">stats</string>
+    <string name="back_button">back button</string>
 
 </resources>

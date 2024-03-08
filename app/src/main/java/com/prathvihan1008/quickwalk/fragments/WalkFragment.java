@@ -6,6 +6,7 @@ import static java.lang.Boolean.TRUE;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -36,6 +37,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -48,7 +50,9 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.prathvihan1008.quickwalk.MainActivity;
 import com.prathvihan1008.quickwalk.MyDBHelper;
+import com.prathvihan1008.quickwalk.OnStartButtonClickListener;
 import com.prathvihan1008.quickwalk.R;
+import com.prathvihan1008.quickwalk.StepCountingService;
 import com.prathvihan1008.quickwalk.TTSListener;
 
 import java.text.SimpleDateFormat;
@@ -70,9 +74,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
     private long elapsedTime = 0L;
     private boolean isRunning = false;
     private boolean isSensorRegistered = false;
-    private boolean isStepCountingEnabled = false;
 
-    private int stepsDuringUnregistered = 0;
     private Handler handler = new Handler();
 
     //TTS MOdel
@@ -82,13 +84,11 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
     public static final String FRAGMENT_LOADED_KEY = "FragmentLoaded";
     public static boolean isFirstTimeLoaded;
 
-    private FrameLayout overlay;
-    private AdView mAdView;
-    private AdView mAdView1;
-    private View glassyView;
+
     private TextView countdownText;
     private boolean flag=true;
     private boolean isButtonEnabled = true;
+    private OnStartButtonClickListener listener;
 
 
 
@@ -109,7 +109,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         stopbtn = view.findViewById(R.id.stopbtn);
 
         progressBar = view.findViewById(R.id.progressBar);
-        glassyView = view.findViewById(R.id.glassyView);
+
         countdownText = view.findViewById(R.id.countdown_text);
 
 
@@ -151,8 +151,8 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
         // Generating steps from 50 to 10000 with a gap of 500
         int minSteps = 50;
-        int maxSteps = 20000;
-        int gap = 500;
+        int maxSteps = 10000;
+        int gap = 50;
         String[] stepsArray = new String[(maxSteps - minSteps) / gap + 1];
 
         for (int i = 0, value = minSteps; value <= maxSteps; i++, value += gap) {
@@ -194,18 +194,6 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         });
 
 
-        // Set a listener to update progress bar when goal is entered
-       /* goalEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    updateProgressBar();
-                    hideKeyboardAndClearFocus(); // Hide keyboard and clear focus
-                    return true;
-                }
-                return false;
-            }
-        });*/
 
 
             ivPauseResume.setOnClickListener(new View.OnClickListener() {
@@ -231,72 +219,6 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         isFirstTimeLoaded = preferences.getBoolean(FRAGMENT_LOADED_KEY, true);
 
         //Adds
-
-        MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-        mAdView = view.findViewById(R.id.adView);
-
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-
-        mAdView.loadAd(adRequest);
-
-
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-                super.onAdClicked();
-               // Toast.makeText(getContext(),"Add",Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when the user is about to return
-                // to the app after tapping on an ad.
-            }
-
-            @Override
-            public void onAdFailedToLoad(LoadAdError adError) {
-                // Code to be executed when an ad request fails.
-                super.onAdFailedToLoad(adError);
-                mAdView.loadAd(adRequest);
-            }
-
-            @Override
-            public void onAdImpression() {
-                // Code to be executed when an impression is recorded
-                // for an ad.
-            }
-
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-                super.onAdLoaded();
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-                super.onAdOpened();
-            }
-        });
-
-        glassyView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // Consume touch events to prevent propagation to underlying views
-                return true;
-            }
-        });
-
-
-
 
 
 
@@ -342,7 +264,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
     }
 
 
-    //TTS
+   // TTS
 
     @Override
     public void onInit(int status) {
@@ -358,6 +280,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
     @Override
     public void onDestroyView() {
+
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
@@ -386,15 +309,24 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
     public void onResume() {
         super.onResume();
-        if (isSensorRegistered) {
+
+        if(isRunning){
             registerSensor();
 
         }
+
+//        if (isSensorRegistered) {
+//            registerSensor();
+//
+//        }
+
 
     }
 
     public void onPause() {
         super.onPause();
+
+
         unregisterSensor();
     }
 
@@ -408,6 +340,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         } else {
 
 
+
             registerSensor();
 
 
@@ -419,7 +352,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
             isRunning = false;
 
             stopbtn.setVisibility(View.VISIBLE);
-            glassyView.setVisibility(View.INVISIBLE);
+           // glassyView.setVisibility(View.INVISIBLE);
 
 
             handler.removeCallbacks(updateTimerTask);
@@ -430,8 +363,9 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
 
             isRunning = true;
-            glassyView.setVisibility(View.VISIBLE);
-            adjustTransparency();
+            //glassyView.setVisibility(View.VISIBLE);
+           // adjustTransparency();
+
             if(flag) {
                 isButtonEnabled=false;
                 countdownText.setVisibility(View.VISIBLE);
@@ -443,6 +377,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
                  startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
                 handler.post(updateTimerTask);
+                onStartButtonClicked();
 
             }
 
@@ -455,16 +390,6 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         }
     }
 
-    private void adjustTransparency() {
-        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-            // Dark theme
-            glassyView.setBackgroundColor(Color.parseColor("#2EFFFFFF")); // Semi-transparent dark color
-        } else {
-            // Light theme
-            glassyView.setBackgroundColor(Color.parseColor("#2E000000")); // Semi-transparent light color
-        }
-    }
 
     private void startCountdown() {
         new CountDownTimer(4000, 1000) {
@@ -479,6 +404,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
                 countdownText.setVisibility(View.GONE);
                 startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
                 handler.post(updateTimerTask);
+                onStartButtonClicked();
                 // Continue with normal execution here
                 // For example:
                 // performNormalExecution();
@@ -488,11 +414,22 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
 
 
-
+    private void stopStepCountingService() {
+        Intent intent = new Intent(getActivity(), StepCountingService.class);
+        intent.setAction(StepCountingService.ACTION_STOP_SERVICE);
+        getActivity().startService(intent);
+    }
     public void onStopClick(View view) {
         // Reset timer and step count
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setFlagRunning(false);
+        }
+      stopStepCountingService();
 
-        isRunning = false;
+
+
+        ivPauseResume.setImageResource(R.drawable.resume);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Save Data");
@@ -505,7 +442,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
             public void onClick(DialogInterface dialog, int which) {
                 // User clicked Yes, save data to DBMS
                 saveDataToDB();
-               // Toast.makeText(getContext(), "Data stored successfully", Toast.LENGTH_LONG).show();
+                isRunning = false;
                 handler.removeCallbacks(updateTimerTask);
                 startTime = 0L;
                 elapsedTime = 0L;
@@ -522,8 +459,8 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
                 unregisterSensor();
                 halfgoalReached = false;
                 goalReached = false;
+               // Toast.makeText(getContext(), "Data stored successfully", Toast.LENGTH_LONG).show();
 
-                ivPauseResume.setImageResource(R.drawable.resume);
 
             }
         });
@@ -532,6 +469,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // User clicked No, do nothing or handle accordingly
+                isRunning = false;
                 handler.removeCallbacks(updateTimerTask);
                 startTime = 0L;
                 elapsedTime = 0L;
@@ -549,16 +487,12 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
                 halfgoalReached = false;
                 goalReached = false;
 
-                ivPauseResume.setImageResource(R.drawable.resume);
             }
         });
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        // Create and show the AlertDialog
 
-        // Set image back to resume icon
-        //updateViewModelWithData();
     }
 
     private void saveDataToDB() {
@@ -617,6 +551,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         isSensorRegistered = false;
 
 
+
     }
 
 
@@ -641,6 +576,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
     public void onSensorChanged(SensorEvent event) {
 
 
+
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             //Toast.makeText(getContext(), "Sensor changed", Toast.LENGTH_SHORT).show();
 
@@ -661,10 +597,6 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
                 saveData();
 
 
-                // Update SharedPreferences to indicate that the fragment has been loaded
-//                SharedPreferences preferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-//                SharedPreferences.Editor editor = preferences.edit();
-//                editor.putBoolean(FRAGMENT_LOADED_KEY, false);
                 isFirstTimeLoaded = false;
                 // editor.apply();
             }
@@ -689,11 +621,6 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
                 // Create a custom Toast with longer duration
                 halfgoalReached = true;
 
-                // onFitnessGoalCompleted();
-                speakText("Well Done!! Half of your fitness goal is completed. Keep walking!");
-                showToast("Half the goal reached");
-
-                // Set a custom view to the Toast (you can design your own layout)
 
             }
 
@@ -753,10 +680,13 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         super.onDestroy();
 
         // Code to be executed before the fragment is destroyed
+
         previewsTotalSteps = totalSteps;
         steps.setText(String.valueOf(0));
         progressBar.setProgress(0);
         saveData();
+        stopStepCountingService();
+
 
 
         // For example, save any necessary data or perform cleanup
@@ -812,6 +742,23 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnStartButtonClickListener) {
+            listener = (OnStartButtonClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnStartButtonClickListener");
+        }
+    }
 
-}
+    // Method to call when start button is clicked
+    private void onStartButtonClicked() {
+        if (listener != null) {
+
+            listener.onStartButtonClicked();
+        }
+
+
+}}
 

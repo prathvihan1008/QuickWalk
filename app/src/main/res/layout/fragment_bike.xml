@@ -7,13 +7,7 @@
     android:background="?attr/backgroundColor"
     android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/glassyView"
-        android:layout_width="match_parent"
-        android:layout_height="520dp"
-        android:background="#9B000000"
-        android:visibility="gone"
-        />
+
 
 
     <ImageView
@@ -31,15 +25,6 @@
     android:orientation="vertical"
     tools:context="com.prathvihan1008.quickwalk.fragments.BikeFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:gravity="center"
-        android:text="@string/step_counter"
-        android:textColor="#3a9bdc"
-        android:textSize="20sp"
-        android:textFontWeight="800" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,9 +34,9 @@
 
 
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="245dp"
-            android:layout_marginTop="105dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp">
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -75,14 +60,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <ImageView
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:src="@drawable/distance"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:contentDescription="@string/distance_icon_description"
 
-                        android:layout_marginEnd="23dp"/>
+                        android:layout_marginEnd="5dp"/>
 
                     <TextView
                         android:id="@+id/distance"
@@ -92,7 +77,7 @@
                         android:gravity="center_horizontal"
                         android:text="@string/_0_0_miles"
                         android:textColor="@color/custom_primary"
-                        android:textSize="30sp"
+                        android:textSize="60sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -103,8 +88,8 @@
 
                     android:orientation="horizontal">
                     <ImageView
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:src="@drawable/goal"
                         android:layout_gravity="center_vertical"
                         android:contentDescription="@string/goal_icon_description"
@@ -134,7 +119,7 @@
                             android:layout_gravity="center_horizontal"
                             android:text="@string/distance_miles"
                             android:textColor="?attr/text_color"
-                            android:textSize="14sp" />
+                            android:textSize="20sp" />
 
 
                     </LinearLayout>
@@ -285,40 +270,36 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center"
+                android:orientation="horizontal"
                 android:paddingHorizontal="30dp">
 
                 <ImageView
                     android:id="@+id/stopbtn"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/stop"
-                    android:clickable="true"
-
-
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="center_vertical"
-                    android:contentDescription="@string/stop_button_description"
-
                     android:layout_marginEnd="25dp"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:src="@drawable/stop"
+                    android:contentDescription="@string/stop_button_description"
                     android:focusable="true"
                     android:visibility="invisible"/>
 
                 <!-- ImageView for Pause/Resume -->
                 <ImageView
                     android:id="@+id/ivPauseResume"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/resume"
-                    android:clickable="true"
-
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="center_vertical"
-
                     android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/pause_resume_icon_description"
 
+                    android:layout_weight="1"
+
+                    android:clickable="true"
+                    android:src="@drawable/resume"
+                    android:contentDescription="@string/pause_resume_icon_description"
                     android:focusable="true" /> <!-- Weight is set to 1 -->
 
                 <!-- Start Running TextView -->
@@ -326,14 +307,13 @@
                     android:id="@+id/notation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:text="@string/start"
                     android:textColor="?attr/text_color"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"/> <!-- Weight is set to 1 -->
+                    android:textSize="30sp" /> <!-- Weight is set to 1 -->
             </LinearLayout>
-
         </androidx.cardview.widget.CardView>
 
 
@@ -350,16 +330,6 @@
 
 
 
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="25dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        ads:adSize="LARGE_BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
-    </com.google.android.gms.ads.AdView>
 </LinearLayout>
 
 
@@ -367,8 +337,8 @@
         android:id="@+id/countdown_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:text="0"
         android:textSize="180sp"
-        android:visibility="invisible"
-        android:layout_centerInParent="true" />
+        android:visibility="invisible" />
 </RelativeLayout>

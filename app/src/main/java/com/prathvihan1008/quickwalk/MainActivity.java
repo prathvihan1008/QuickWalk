@@ -2,6 +2,7 @@ package com.prathvihan1008.quickwalk;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -29,6 +30,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.prathvihan1008.quickwalk.fragments.BikeFragment;
 import com.prathvihan1008.quickwalk.fragments.JogFragment;
 import com.prathvihan1008.quickwalk.fragments.WalkFragment;
@@ -37,37 +45,25 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnStartButtonClickListener  {
     private static final int ACTIVITY_RECOGNITION_PERMISSION_REQUEST_CODE = 123;
-
-
-
     private ImageView img;
     private static final String TAG = "MainActivity";
     private PowerManager.WakeLock wakeLock;
-
-
-
-
     public boolean isSoundOn=true;
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
+    private ImageView action_sound;
+    private ImageView action_bars;
+    private boolean flag_running=false;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        action_sound=findViewById(R.id.action_sound);
+        action_bars=findViewById(R.id.action_bars);
         Log.d(TAG, "MainActivity onCreate() method called");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-
-
-
-
-
 
         // Load the initial fragment (HistoryFragment) dynamically
         loadInitialFragment();
@@ -78,11 +74,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
-
-
-
-
         ActionBar actionBar = getSupportActionBar();
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -91,8 +82,69 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(false);
         }
 
-        //Database
-       // MyDBHelper dbHelper=new MyDBHelper(this);
+
+        action_bars.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+
+
+                startActivity(intent);
+
+            }
+        });
+
+        action_sound.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isSoundOn) {
+                    action_sound.setImageResource(R.drawable.sound_off);
+
+                    isSoundOn=false;
+                    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+
+                    if (fragment instanceof WalkFragment) {
+                        WalkFragment walkFragment = (WalkFragment) fragment;
+                        walkFragment.stopTTS();
+
+                    } else if (fragment instanceof JogFragment) {
+                        JogFragment jogFragment = (JogFragment) fragment;
+                        jogFragment.stopTTS();
+                    }else if(fragment instanceof BikeFragment)
+                    {
+                        BikeFragment bikeFragment=(BikeFragment)  fragment;
+                        bikeFragment.stopTTS();
+
+                    }
+
+                } else {
+                    action_sound.setImageResource(R.drawable.sound_on);
+                    isSoundOn=true;
+                    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+                    if (fragment instanceof WalkFragment) {
+                        WalkFragment walkFragment = (WalkFragment) fragment;
+                        walkFragment.startTTS("On");
+                    } else if (fragment instanceof JogFragment) {
+                        JogFragment jogFragment = (JogFragment) fragment;
+                        jogFragment.startTTS("On");
+                    }
+
+
+                    else if(fragment instanceof BikeFragment)
+                    {
+                        BikeFragment bikeFragment=(BikeFragment)  fragment;
+                        bikeFragment.startTTS("On");
+
+
+                    }
+
+
+
+                }
+
+            }
+        });
 
 
 
@@ -125,6 +177,62 @@ public class MainActivity extends AppCompatActivity {
             checkAndRequestPermission();
 
         }
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        mAdView = findViewById(R.id.adView);
+
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+
+        mAdView.loadAd(adRequest);
+
+
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+                super.onAdClicked();
+            }
+
+            @Override
+            public void onAdClosed() {
+                // Code to be executed when the user is about to return
+                // to the app after tapping on an ad.
+            }
+
+            @Override
+            public void onAdFailedToLoad(LoadAdError adError) {
+                // Code to be executed when an ad request fails.
+                super.onAdFailedToLoad(adError);
+                mAdView.loadAd(adRequest);
+            }
+
+            @Override
+            public void onAdImpression() {
+                // Code to be executed when an impression is recorded
+                // for an ad.
+            }
+
+            @Override
+            public void onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+                super.onAdLoaded();
+            }
+
+            @Override
+            public void onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+                super.onAdOpened();
+            }
+        });
+
+
 
 
 
@@ -185,83 +293,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-
-        // Handle item selection based on item ID
-        int itemId = item.getItemId();
-        if (itemId == R.id.action_sound) {
-            if (isSoundOn) {
-                item.setIcon(R.drawable.sound_off);
-              //  Toast.makeText(this, "Sound On", Toast.LENGTH_SHORT).show();
-              //  textToSpeech.stop();
-                isSoundOn=false;
-                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-                // WalkFragment fragment= (WalkFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-                if (fragment instanceof WalkFragment) {
-                    WalkFragment walkFragment = (WalkFragment) fragment;
-                    walkFragment.stopTTS();
-
-                } else if (fragment instanceof JogFragment) {
-                    JogFragment jogFragment = (JogFragment) fragment;
-                    jogFragment.stopTTS();
-                }else if(fragment instanceof BikeFragment)
-                {
-                    BikeFragment bikeFragment=(BikeFragment)  fragment;
-                    bikeFragment.stopTTS();
-
-
-
-                }
-
-
-
-            } else {
-                item.setIcon(R.drawable.sound_on);
-              //  Toast.makeText(this, "Sound Off", Toast.LENGTH_SHORT).show();
-                isSoundOn=true;
-                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-                // WalkFragment fragment= (WalkFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-                if (fragment instanceof WalkFragment) {
-                    WalkFragment walkFragment = (WalkFragment) fragment;
-                    walkFragment.startTTS("On");
-                } else if (fragment instanceof JogFragment) {
-                    JogFragment jogFragment = (JogFragment) fragment;
-                    jogFragment.startTTS("On");
-                }
-
-
-                else if(fragment instanceof BikeFragment)
-                {
-                    BikeFragment bikeFragment=(BikeFragment)  fragment;
-                    bikeFragment.startTTS("On");
-
-
-                }
-
-
-
-            }
-            return true;
-        } else if (itemId == R.id.action_bars) {
-            // When you want to navigate to HistoryActivity, use an Intent
-            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-
-
-            startActivity(intent);
-
-
-            // Handle Item 2 click
-            // Example: Toast.makeText(this, "Item 2 Clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-
-    }
-
-
     private void loadInitialFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -318,12 +349,27 @@ public class MainActivity extends AppCompatActivity {
 
     //code for handling onBackPressed
 
-    @SuppressLint("MissingSuperCall")
-    @Override
     public void onBackPressed() {
-        //super.onBackPressed();
-        showExitConfirmationDialog();
+        // Check if the activity is running (e.g., if the sensor is registered)
+        if (flag_running) {
+            // Do not call super.onBackPressed() to prevent the activity from being destroyed
+            // Instead, navigate the user to the home screen or perform other actions
+            navigateToHomeScreen();
+        } else {
+            // If the activity is not running, allow the default behavior (destroy the activity)
+            super.onBackPressed();
+        }
+    }
 
+    private void navigateToHomeScreen() {
+        // Implement logic to navigate the user to the home screen
+        // For example:
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
+    }
+    public void setFlagRunning(boolean running) {
+        this.flag_running = running;
     }
 
     private void showExitConfirmationDialog() {
@@ -345,5 +391,21 @@ public class MainActivity extends AppCompatActivity {
         // Create and show the AlertDialog
         builder.create().show();
     }
+
+    @Override
+    public void onStartButtonClicked() {
+// Start the StepCountingService and show notification
+        flag_running=true;
+
+        Intent serviceIntent = new Intent(this, StepCountingService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
+
+        // Add appropriate flags to the notification intent
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
 
 }

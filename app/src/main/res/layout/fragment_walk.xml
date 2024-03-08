@@ -7,14 +7,7 @@
     android:background="?attr/backgroundColor"
 
 
-    android:layout_height="match_parent">
-    <View
-        android:id="@+id/glassyView"
-        android:layout_width="match_parent"
-        android:layout_height="520dp"
-        android:background="#9B000000"
-        android:visibility="gone"
-     />
+    android:layout_height="wrap_content">
 
 
 
@@ -26,7 +19,8 @@
         android:layout_centerInParent="true"
 
         android:background="@drawable/walk"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+         />
 
 
     <LinearLayout
@@ -38,15 +32,6 @@
 
 
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:gravity="center"
-        android:text="@string/step_counter"
-        android:textColor="#3a9bdc"
-        android:textFontWeight="800"
-        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -56,9 +41,9 @@
 
 
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="245dp"
-            android:layout_marginTop="105dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp">
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -82,10 +67,10 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="23dp"
+                        android:layout_marginEnd="5dp"
                         android:layout_weight="1"
                         android:contentDescription="@string/steps_icon_description"
                         android:src="@drawable/steps" />
@@ -98,7 +83,7 @@
                         android:gravity="center_horizontal"
                         android:text="@string/_0"
                         android:textColor="@color/custom_primary"
-                        android:textSize="40sp"
+                        android:textSize="60sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -109,8 +94,8 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:contentDescription="@string/goal_icon_description"
@@ -133,7 +118,7 @@
                             android:background="@drawable/goal_custom_spinner_background"
 
 
-                            android:dropDownHeight="5dp" />
+                            android:dropDownHeight="12dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -141,7 +126,7 @@
                             android:layout_gravity="center_horizontal"
                             android:text="@string/steps_goal"
                             android:textColor="?attr/text_color"
-                            android:textSize="14sp" />
+                            android:textSize="20sp" />
 
 
                     </LinearLayout>
@@ -290,8 +275,8 @@
 
                 <ImageView
                     android:id="@+id/stopbtn"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="25dp"
                     android:layout_weight="1"
@@ -304,8 +289,8 @@
                 <!-- ImageView for Pause/Resume -->
                 <ImageView
                     android:id="@+id/ivPauseResume"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="10dp"
 
@@ -326,7 +311,7 @@
                     android:gravity="center"
                     android:text="@string/start"
                     android:textColor="?attr/text_color"
-                    android:textSize="20sp" /> <!-- Weight is set to 1 -->
+                    android:textSize="30sp" /> <!-- Weight is set to 1 -->
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -338,29 +323,19 @@
 
 
 
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="25dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        ads:adSize="LARGE_BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
-    </com.google.android.gms.ads.AdView>
 
 
 
 
-</LinearLayout>
+    </LinearLayout>
 
 
     <TextView
         android:id="@+id/countdown_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0"
+        android:layout_centerInParent="true"
+        android:text="@string/_0"
         android:textSize="180sp"
-        android:visibility="invisible"
-        android:layout_centerInParent="true" />
+        android:visibility="invisible" />
 </RelativeLayout>

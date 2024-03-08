@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.appcompat.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="?attr/colorPrimary"
+    android:elevation="4dp"
+    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+    android:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+    <!-- Include your two buttons here -->
+    <ImageView
+        android:id="@+id/action_back"
+        android:layout_width="48dp"
+        android:padding="3dp"
+        android:layout_margin="3dp"
+        android:layout_height="48dp"
+        android:clickable="true"
+        android:src="@drawable/ic_back"
+        android:contentDescription="@string/back_button"
+        android:focusable="true" />
+
+
+
+</androidx.appcompat.widget.Toolbar>

@@ -4,6 +4,7 @@ import static android.content.Context.SENSOR_SERVICE;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -31,6 +32,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -41,8 +43,11 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.prathvihan1008.quickwalk.MainActivity;
 import com.prathvihan1008.quickwalk.MyDBHelper;
+import com.prathvihan1008.quickwalk.OnStartButtonClickListener;
 import com.prathvihan1008.quickwalk.R;
+import com.prathvihan1008.quickwalk.StepCountingService;
 import com.prathvihan1008.quickwalk.TTSListener;
 
 import java.text.SimpleDateFormat;
@@ -55,10 +60,10 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
     private Sensor stepSensor;
     private int totalSteps=0;
     private int previewsTotalSteps=0;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 123;
+
     private ProgressBar progressBar;
    // private TextView steps;
-    private EditText goalEditText;
+
 
     private TextView distance,calories,tvTimer,notation,speed;
     private ImageView ivPauseResume,stopbtn;
@@ -66,21 +71,20 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
     private long elapsedTime = 0L;
     private boolean isRunning = false;
     private boolean isSensorRegistered=false;
-    private boolean isStepCountingEnabled = false;
 
-    private int stepsDuringUnregistered = 0;
     private Handler handler = new Handler();
     private TextToSpeech textToSpeech;
     private double selectedDis;
     public static final String PREFS_NAME="MyPref1";
     public static final String FRAGMENT_LOADED_KEY="FragmentLoaded";
     public static boolean isFirstTimeLoaded;
-    private AdView mAdView;
-    private AdView mAdView1;
-    private View glassyView;
+
+
+
     private TextView countdownText;
     private boolean flag=true;
     private boolean isButtonEnabled = true;
+    private OnStartButtonClickListener listener;
 
 
 
@@ -96,7 +100,7 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
         ivPauseResume=view.findViewById(R.id.ivPauseResume);
         stopbtn=view.findViewById(R.id.stopbtn);
         speed=view.findViewById(R.id.speed);
-        glassyView = view.findViewById(R.id.glassyView);
+
 
         progressBar = view.findViewById(R.id.progressBar);
         countdownText = view.findViewById(R.id.countdown_text);
@@ -114,9 +118,9 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
         Spinner spinnerDisGoal = view.findViewById(R.id.spinnerDisGoal);
         // Generating steps from 50 to 10000 with a gap of 500
         double mindis = 0.5;
-        double maxdis = 5.0;
+        double maxdis = 10.0;
         double gap = 0.5;
-       String[] stepsArray = new String[10];
+       String[] stepsArray = new String[20];
         int arrayLength = (int) Math.ceil((maxdis - mindis) / gap) + 1;
 
 
@@ -160,18 +164,7 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
             }
         });
 
-        // Set a listener to update progress bar when goal is entered
-    /*    goalEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    updateProgressBar();
-                    hideKeyboardAndClearFocus(); // Hide keyboard and clear focus
-                    return true;
-                }
-                return false;
-            }
-        });*/
+
 
         ivPauseResume.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,60 +188,6 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
         //solving the steps problem
         SharedPreferences preferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         isFirstTimeLoaded = preferences.getBoolean(FRAGMENT_LOADED_KEY, true);
-
-        MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-        mAdView = view.findViewById(R.id.adView);
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-        AdRequest adRequest1 = new AdRequest.Builder().build();
-
-        mAdView.loadAd(adRequest);
-
-
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-                super.onAdClicked();
-                // Toast.makeText(getContext(),"Add",Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when the user is about to return
-                // to the app after tapping on an ad.
-            }
-
-            @Override
-            public void onAdFailedToLoad(LoadAdError adError) {
-                // Code to be executed when an ad request fails.
-                super.onAdFailedToLoad(adError);
-                mAdView.loadAd(adRequest);
-            }
-
-            @Override
-            public void onAdImpression() {
-                // Code to be executed when an impression is recorded
-                // for an ad.
-            }
-
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-                super.onAdLoaded();
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-                super.onAdOpened();
-            }
-        });
 
 
         return view;
@@ -306,55 +245,14 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
     }
 
 
-    // Handle the result of the permission request
-
-
-
-
-
-
-
-
-    // Method to hide keyboard and clear focus
-   /* private void hideKeyboardAndClearFocus() {
-        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(goalEditText.getWindowToken(), 0);
-        goalEditText.clearFocus();
-    }*/
-
-
-
-    // Method to update progress bar based on user-entered goal
-   /* private void updateProgressBar() {
-        String goalText = goalEditText.getText().toString().trim();  // Trim any leading/trailing whitespace
-        if (!TextUtils.isEmpty(goalText)) {
-            try {
-                int goalValue = Integer.parseInt(goalText);
-                progressBar.setMax(100);//using percentage concept since progress bar do not accept float values
-                progressBar.setProgress(0);
-            } catch (NumberFormatException e) {
-                // Handle the case where the string cannot be parsed as an integer
-                e.printStackTrace();
-                Log.e("BikeFragment", "Error parsing goalText: " + goalText);
-            }
-        } else {
-            // If goalText is empty, set the goal to 0 and set progress bar to max
-            progressBar.setMax(0);
-            progressBar.setProgress(0);
-            Log.d("BikeFragment", "GoalText is empty. Setting goal to 0.");
-        }
-    }*/
-
-
-
-
-
     public   void onResume()
     {
         super.onResume();
-        if (isSensorRegistered) {
+        if(isRunning){
             registerSensor();
+
         }
+
 
     }
 
@@ -378,7 +276,7 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
             // Pause
             isRunning = false;
             stopbtn.setVisibility(View.VISIBLE);
-            glassyView.setVisibility(View.INVISIBLE);
+
             handler.removeCallbacks(updateTimerTask);
             ivPauseResume.setImageResource(R.drawable.resume);
             notation.setText("Start");
@@ -386,8 +284,8 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
             // Resume
 
             isRunning = true;
-            glassyView.setVisibility(View.VISIBLE);
-            adjustTransparency();
+
+
             if(flag) {
                 isButtonEnabled=false;
                 countdownText.setVisibility(View.VISIBLE);
@@ -399,6 +297,7 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
 
                 startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
                 handler.post(updateTimerTask);
+                onStartButtonClicked();
 
             }
 
@@ -410,16 +309,7 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
             notation.setText("Pause");
         }
     }
-    private void adjustTransparency() {
-        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-            // Dark theme
-            glassyView.setBackgroundColor(Color.parseColor("#2EFFFFFF")); // Semi-transparent dark color
-        } else {
-            // Light theme
-            glassyView.setBackgroundColor(Color.parseColor("#2E000000")); // Semi-transparent light color
-        }
-    }
+
 
     private void startCountdown() {
         new CountDownTimer(4000, 1000) {
@@ -434,6 +324,7 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
                 countdownText.setVisibility(View.GONE);
                 startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
                 handler.post(updateTimerTask);
+                onStartButtonClicked();
                 // Continue with normal execution here
                 // For example:
                 // performNormalExecution();
@@ -441,9 +332,23 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
         }.start();
     }
 
+    private void stopStepCountingService() {
+        Intent intent = new Intent(getActivity(), StepCountingService.class);
+        intent.setAction(StepCountingService.ACTION_STOP_SERVICE);
+        getActivity().startService(intent);
+    }
+
     public void onStopClick(View view) {
-        // Reset timer and step count
-        isRunning = false;
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setFlagRunning(false);
+        }
+
+        stopStepCountingService(); //stop the service
+
+
+        ivPauseResume.setImageResource(R.drawable.resume);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Save Data");
@@ -457,17 +362,18 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
             public void onClick(DialogInterface dialog, int which) {
                 // User clicked Yes, save data to DBMS
                 saveDataToDB();
-
+                isRunning = false;
                 handler.removeCallbacks(updateTimerTask);
                 startTime = 0L;
                 elapsedTime = 0L;
                 tvTimer.setText("00:00");
                 distance.setText("0.00");
                 calories.setText("0.00");
+                speed.setText("0.00");
                 notation.setText("Start");
 
                 previewsTotalSteps = totalSteps;
-               // steps.setText(String.valueOf(0));
+                // steps.setText(String.valueOf(0));
                 progressBar.setProgress(0);
 
                 resetSteps();
@@ -475,7 +381,7 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
                 halfgoalReached=false;
                 goalReached=false;
 
-                ivPauseResume.setImageResource(R.drawable.resume);
+
             }
         });
 
@@ -483,16 +389,18 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // User clicked No, do nothing or handle accordingly
+                isRunning = false;
                 handler.removeCallbacks(updateTimerTask);
                 startTime = 0L;
                 elapsedTime = 0L;
                 tvTimer.setText("00:00");
                 distance.setText("0.00");
                 calories.setText("0.00");
+                speed.setText("0.00");
                 notation.setText("Start");
 
                 previewsTotalSteps = totalSteps;
-               // steps.setText(String.valueOf(0));
+                // steps.setText(String.valueOf(0));
                 progressBar.setProgress(0);
 
                 resetSteps();
@@ -500,16 +408,12 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
                 halfgoalReached=false;
                 goalReached=false;
 
-                ivPauseResume.setImageResource(R.drawable.resume);
             }
         });
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        // Create and show the AlertDialog
 
-        // Set image back to resume icon
-        //updateViewModelWithData();
     }
 
     private void saveDataToDB() {
@@ -610,10 +514,6 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
                 saveData();
 
 
-                // Update SharedPreferences to indicate that the fragment has been loaded
-//                SharedPreferences preferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-//                SharedPreferences.Editor editor = preferences.edit();
-//                editor.putBoolean(FRAGMENT_LOADED_KEY, false);
                 isFirstTimeLoaded=false;
                 // editor.apply();
             }
@@ -647,10 +547,6 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
                 // Create a custom Toast with longer duration
                 halfgoalReached=true;
 
-                speakText("Well Done!! Half of your fitness goal is completed. Keep walking!");
-                showToast("Half the goal reached");
-
-                // Set a custom view to the Toast (you can design your own layout)
 
             }
 
@@ -723,6 +619,23 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Code to be executed before the fragment is destroyed
+        previewsTotalSteps = totalSteps;
+
+        progressBar.setProgress(0);
+        saveData();
+        stopStepCountingService();
+
+
+
+        // For example, save any necessary data or perform cleanup
+
+    }
+
 
     private Runnable updateTimerTask = new Runnable() {
         @Override
@@ -770,5 +683,22 @@ public class BikeFragment extends Fragment implements SensorEventListener,TextTo
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+
+
     }
-}
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnStartButtonClickListener) {
+            listener = (OnStartButtonClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnStartButtonClickListener");
+        }
+    }
+    private void onStartButtonClicked() {
+        if (listener != null) {
+
+            listener.onStartButtonClicked();
+        }
+}}

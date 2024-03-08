@@ -1,6 +1,7 @@
 package com.prathvihan1008.quickwalk;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,13 +35,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class HistoryActivity extends AppCompatActivity {
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.his_toolbar_menu, menu);
-//        return true;
-//    }
-
     private RecyclerView recyclerView;
     private DataModelAdapter adapter;
     private List<DataModel> dataModels;
@@ -49,6 +44,7 @@ public class HistoryActivity extends AppCompatActivity {
     private InterstitialAd mInterstitialAd;
     private TextView selectedDateTextView;
     private Calendar calendar;
+    private ImageView action_back;
 
 
 
@@ -63,6 +59,7 @@ public class HistoryActivity extends AppCompatActivity {
         setContentView(R.layout.history_fragment_layout);
 
         //it keeps the screen awake (only applied to particular activity not whole device)
+        action_back=findViewById(R.id.action_back);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         selectedDateTextView = findViewById(R.id.idTVSelectedDate);
@@ -123,19 +120,28 @@ public class HistoryActivity extends AppCompatActivity {
 
 
 
-        Toolbar toolbar = findViewById(R.id.toolbar1);
-        setSupportActionBar(toolbar);
-
-        // Enable the Up button
-        ActionBar actionBar = getSupportActionBar();
-
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        Drawable upArrow = ContextCompat.getDrawable(this, R.drawable.ic_back);
-        if (upArrow != null) {
-            upArrow.setColorFilter(getResources().getColor(R.color.back_botton), PorterDuff.Mode.SRC_ATOP);
-            getSupportActionBar().setHomeAsUpIndicator(upArrow);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
         }
+
+
+        ActionBar actionBar = getSupportActionBar();
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
+        action_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+
+
+
+            }
+        });
 
 
         // Use HistoryActivity.this as the context
@@ -149,11 +155,7 @@ public class HistoryActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(HistoryActivity.this));
         recyclerView.setAdapter(adapter);
 //
-//        calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
-//            // Update the displayed data based on the selected date
-//            updateData(year, month, dayOfMonth);
-//        });
-            //this calls the method with current date time and year
+
         updateData(Calendar.getInstance().get(Calendar.YEAR),
                 Calendar.getInstance().get(Calendar.MONTH),
                 Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
@@ -245,18 +247,7 @@ public class HistoryActivity extends AppCompatActivity {
         return String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle toolbar item clicks
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Handle the Up button click
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+
     @Override
     public void onBackPressed() {
         // Handle back button press

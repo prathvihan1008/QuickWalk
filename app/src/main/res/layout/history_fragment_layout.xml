@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar1"
+    <include
+        layout="@layout/toolbar_history"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-     />
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar_history"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,10 +40,10 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:text="Pick Date"
-            android:textAllCaps="false"
             android:contentDescription="Calender"
-            android:src="@drawable/calender_icon"/>
+            android:src="@drawable/calender_icon"
+            android:text="Pick Date"
+            android:textAllCaps="false" />
 
     </LinearLayout>
 
@@ -54,20 +53,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blue"
         android:layout_marginTop="20sp"
+        android:background="@color/blue"
         android:gravity="center">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/saved_data_will_appear_here"
-            android:textSize="20sp"
-
-
             android:textColor="?attr/text_color"
 
-           />
 
+            android:textSize="20sp"
+
+            />
 
 
     </LinearLayout>
@@ -76,21 +75,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
-       >
+        >
 
         <!-- RelativeLayout with elevated background -->
 
 
-            <!-- RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
 
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:background="?attr/backgroundColor"
-               />
-
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/backgroundColor"
+            android:padding="8dp" />
 
 
     </FrameLayout>

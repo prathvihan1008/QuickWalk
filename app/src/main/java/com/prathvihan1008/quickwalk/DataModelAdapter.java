@@ -52,10 +52,10 @@ public class DataModelAdapter extends RecyclerView.Adapter<DataModelAdapter.View
         }
 
         public void bindData(DataModel dataModel) {
-            textViewTime.setText("Time Spent:                  " + dataModel.getTime());
-            textViewSteps.setText("Steps:                            " + dataModel.getSteps());
-            textViewDistance.setText("Distance Moved:          " + dataModel.getDistance());
-            textViewCalories.setText("Calories Burned:          " + dataModel.getCalories());
+            textViewTime.setText("Time Spent:               " + dataModel.getTime()+" (min)");
+            textViewSteps.setText("Steps:                         " + dataModel.getSteps()+"");
+            textViewDistance.setText("Distance Moved:       " + dataModel.getDistance()+" (miles)");
+            textViewCalories.setText("Calories Burned:       " + dataModel.getCalories());
             //textViewDate.setText("Date: " + dataModel.getDate());
         }
     }

@@ -4,6 +4,7 @@ import static android.content.Context.SENSOR_SERVICE;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -32,6 +33,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -42,8 +44,11 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.prathvihan1008.quickwalk.MainActivity;
 import com.prathvihan1008.quickwalk.MyDBHelper;
+import com.prathvihan1008.quickwalk.OnStartButtonClickListener;
 import com.prathvihan1008.quickwalk.R;
+import com.prathvihan1008.quickwalk.StepCountingService;
 import com.prathvihan1008.quickwalk.TTSListener;
 
 import java.text.SimpleDateFormat;
@@ -57,7 +62,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
     private int previewsTotalSteps=0;
     private ProgressBar progressBar;
     private TextView steps;
-    private EditText goalEditText;
+
 
     private TextView distance,calories,tvTimer,notation;
     private ImageView ivPauseResume,stopbtn;
@@ -65,20 +70,19 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
     private long elapsedTime = 0L;
     private boolean isRunning = false;
     private boolean isSensorRegistered=false;
-    private boolean isStepCountingEnabled = false;
 
-    private int stepsDuringUnregistered = 0;
     private Handler handler = new Handler();
     private TextToSpeech textToSpeech;
     public static final String PREFS_NAME="MyPref1";
     public static final String FRAGMENT_LOADED_KEY="FragmentLoaded";
     public static boolean isFirstTimeLoaded;
-    private AdView mAdView;
     private AdView mAdView1;
-    private View glassyView;
+
     private TextView countdownText;
     private boolean flag=true;
     private boolean isButtonEnabled = true;
+
+    private OnStartButtonClickListener listener;
 
 
 
@@ -104,7 +108,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
         progressBar.setMax(5000);
         progressBar.setProgress(0);
         steps = view.findViewById(R.id.steps);
-        glassyView = view.findViewById(R.id.glassyView);
+
         steps.setText(String.valueOf(0));
         textToSpeech = new TextToSpeech(getContext(), this);
 
@@ -116,8 +120,8 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
         Spinner spinnerStepsGoal = view.findViewById(R.id.spinnerStepsGoal);
         // Generating steps from 50 to 10000 with a gap of 500
         int minSteps = 50;
-        int maxSteps = 20000;
-        int gap = 500;
+        int maxSteps = 10000;
+        int gap = 50;
         String[] stepsArray = new String[(maxSteps - minSteps) / gap + 1];
 
         for (int i = 0, value = minSteps; value <= maxSteps; i++, value += gap) {
@@ -181,59 +185,6 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
         SharedPreferences preferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         isFirstTimeLoaded = preferences.getBoolean(FRAGMENT_LOADED_KEY, true);
 
-        MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-        mAdView = view.findViewById(R.id.adView);
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        mAdView.loadAd(adRequest);
-
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-                super.onAdClicked();
-                // Toast.makeText(getContext(),"Add",Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when the user is about to return
-                // to the app after tapping on an ad.
-            }
-
-            @Override
-            public void onAdFailedToLoad(LoadAdError adError) {
-                // Code to be executed when an ad request fails.
-                super.onAdFailedToLoad(adError);
-                mAdView.loadAd(adRequest);
-            }
-
-            @Override
-            public void onAdImpression() {
-                // Code to be executed when an impression is recorded
-                // for an ad.
-            }
-
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-                super.onAdLoaded();
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-                super.onAdOpened();
-            }
-        });
-
-
 
 
 
@@ -295,31 +246,21 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
     }
 
     // Method to hide keyboard and clear focus
-    private void hideKeyboardAndClearFocus() {
-        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(goalEditText.getWindowToken(), 0);
-        goalEditText.clearFocus();
-    }
 
 
 
     // Method to update progress bar based on user-entered goal
-    private void updateProgressBar() {
-        String goalText = goalEditText.getText().toString();
-        if (!TextUtils.isEmpty(goalText)) {
-            int goalValue = Integer.parseInt(goalText);
-            progressBar.setMax(goalValue);
-            progressBar.setProgress(0);
-        }
-    }
+
 
 
     public   void onResume()
     {
         super.onResume();
-        if (isSensorRegistered) {
+        if(isRunning){
             registerSensor();
+
         }
+
 
     }
 
@@ -343,7 +284,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
             // Pause
             isRunning = false;
             stopbtn.setVisibility(View.VISIBLE);
-            glassyView.setVisibility(View.INVISIBLE);
+
             handler.removeCallbacks(updateTimerTask);
             ivPauseResume.setImageResource(R.drawable.resume);
             notation.setText("Start");
@@ -351,8 +292,8 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
         } else {
             // Resume
             isRunning = true;
-            glassyView.setVisibility(View.VISIBLE);
-            adjustTransparency();
+
+
             if(flag) {
                 isButtonEnabled=false;
                 countdownText.setVisibility(View.VISIBLE);
@@ -364,6 +305,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
 
                 startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
                 handler.post(updateTimerTask);
+                onStartButtonClicked();
 
             }
 
@@ -373,16 +315,6 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
             //handler.post(updateTimerTask);
             ivPauseResume.setImageResource(R.drawable.pause1);
             notation.setText("Pause");
-        }
-    }
-    private void adjustTransparency() {
-        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-            // Dark theme
-            glassyView.setBackgroundColor(Color.parseColor("#2EFFFFFF")); // Semi-transparent dark color
-        } else {
-            // Light theme
-            glassyView.setBackgroundColor(Color.parseColor("#2E000000")); // Semi-transparent light color
         }
     }
 
@@ -399,6 +331,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
                 countdownText.setVisibility(View.GONE);
                 startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
                 handler.post(updateTimerTask);
+                onStartButtonClicked();
                 // Continue with normal execution here
                 // For example:
                 // performNormalExecution();
@@ -406,9 +339,22 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
         }.start();
     }
 
+    private void stopStepCountingService() {
+        Intent intent = new Intent(getActivity(), StepCountingService.class);
+        intent.setAction(StepCountingService.ACTION_STOP_SERVICE);
+        getActivity().startService(intent);
+    }
+
     public void onStopClick(View view) {
-        // Reset timer and step count
-        isRunning = false;
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.setFlagRunning(false);
+        }
+
+        stopStepCountingService();//stop the service
+
+
+        ivPauseResume.setImageResource(R.drawable.resume);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Save Data");
@@ -422,6 +368,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
             public void onClick(DialogInterface dialog, int which) {
                 // User clicked Yes, save data to DBMS
                 saveDataToDB();
+                isRunning = false;
 
                 handler.removeCallbacks(updateTimerTask);
                 startTime = 0L;
@@ -440,7 +387,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
                 halfgoalReached=false;
                 goalReached=false;
 
-                ivPauseResume.setImageResource(R.drawable.resume);
+
             }
         });
 
@@ -448,6 +395,8 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // User clicked No, do nothing or handle accordingly
+                isRunning = false;
+
                 handler.removeCallbacks(updateTimerTask);
                 startTime = 0L;
                 elapsedTime = 0L;
@@ -465,16 +414,12 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
                 halfgoalReached=false;
                 goalReached=false;
 
-                ivPauseResume.setImageResource(R.drawable.resume);
             }
         });
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        // Create and show the AlertDialog
 
-        // Set image back to resume icon
-        //updateViewModelWithData();
     }
 
     private void saveDataToDB() {
@@ -596,8 +541,8 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
                 // Create a custom Toast with longer duration
                 halfgoalReached=true;
 
-                speakText("Well Done!! Half of your fitness goal is completed. Keep walking!");
-                showToast("Half the goal reached");
+                //speakText("Well Done!! Half of your fitness goal is completed. Keep walking!");
+                //showToast("Half the goal reached");
 
                 // Set a custom view to the Toast (you can design your own layout)
 
@@ -656,6 +601,23 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Code to be executed before the fragment is destroyed
+        previewsTotalSteps = totalSteps;
+        steps.setText(String.valueOf(0));
+        progressBar.setProgress(0);
+        saveData();
+        stopStepCountingService();
+
+
+
+        // For example, save any necessary data or perform cleanup
+
+    }
+
 
     private Runnable updateTimerTask = new Runnable() {
         @Override
@@ -704,4 +666,19 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnStartButtonClickListener) {
+            listener = (OnStartButtonClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnStartButtonClickListener");
+        }
+    }
+    private void onStartButtonClicked() {
+        if (listener != null) {
+
+            listener.onStartButtonClicked();
+        }}
 }
