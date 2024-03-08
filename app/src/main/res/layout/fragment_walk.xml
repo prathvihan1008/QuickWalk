@@ -126,7 +126,7 @@
                             android:layout_gravity="center_horizontal"
                             android:text="@string/steps_goal"
                             android:textColor="?attr/text_color"
-                            android:textSize="20sp" />
+                            android:textSize="25sp" />
 
 
                     </LinearLayout>
@@ -274,17 +274,17 @@
                 android:paddingHorizontal="30dp">
 
                 <ImageView
-                    android:id="@+id/stopbtn"
+                    android:id="@+id/savebtn"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="25dp"
                     android:layout_weight="1"
                     android:clickable="true"
-                    android:src="@drawable/stop"
+                    android:src="@drawable/ic_save"
                     android:contentDescription="@string/stop_button_description"
                     android:focusable="true"
-                    android:visibility="invisible"/>
+                    android:visibility="gone"/>
 
                 <!-- ImageView for Pause/Resume -->
                 <ImageView

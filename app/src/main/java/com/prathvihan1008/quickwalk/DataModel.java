@@ -9,6 +9,8 @@ public class DataModel {
    public String steps;
   public String distance;
    public String calories;
+   public String savingTime;
+   public String F;
 
     // Constructors and other methods (if any)
 
@@ -30,6 +32,13 @@ public class DataModel {
 
     public String getCalories() {
         return calories;
+    }
+    public String getSavingTime() {
+        return savingTime;
+    }
+
+    public String getF() {
+        return F;
     }
 
     public String getDate(){return date;}

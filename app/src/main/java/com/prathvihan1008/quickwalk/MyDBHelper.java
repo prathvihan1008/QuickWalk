@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -16,7 +15,7 @@ public class MyDBHelper extends SQLiteOpenHelper{
 
     private final static String DATABASE_NAME ="DataDB"; //this needs to be static because super() methods is
     // called first and it requires the DATABASE_NAME to be referenced before calling the super() meethod ,this is only possible if the field is made static
-    private static final int DATABASE_VERSION =4;
+    private static final int DATABASE_VERSION =5;
     private static final String TABLE_DATA ="Data";
 
     //COLUMN CONTAINTS
@@ -27,6 +26,7 @@ public class MyDBHelper extends SQLiteOpenHelper{
     private static final String KEY_STEPS ="steps";
     private static final String KEY_DATE ="date";
     private static final String KEY_savingTime ="savingTime";
+    private static final String KEY_F ="F";
 
     public MyDBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,7 +41,8 @@ public class MyDBHelper extends SQLiteOpenHelper{
                 KEY_DISTANCE + " TEXT, " +
                 KEY_CAL + " TEXT, " +  // Add space before TEXT
                 KEY_DATE + " TEXT, " +  // Add space before TEXT
-                KEY_savingTime + " TEXT" +  // Add space before TEXT and remove extra comma
+                KEY_savingTime + " TEXT, " +
+                KEY_F + " TEXT " + // Add space before TEXT and remove extra comma
                 ")");
     }
 
@@ -55,7 +56,7 @@ public class MyDBHelper extends SQLiteOpenHelper{
 
     }
 
-    public void addData(String time, String steps, String distance, String cal,String date,String savingTime) {
+    public void addData(String time, String steps, String distance, String cal, String date, String savingTime, String F) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -69,6 +70,7 @@ public class MyDBHelper extends SQLiteOpenHelper{
         values.put(KEY_CAL, cal);
       values.put(KEY_DATE, date);  // Add date
     values.put(KEY_savingTime, savingTime);
+    values.put(KEY_F,F);
 
         // Inserting Row
         // Inserting Row
@@ -87,7 +89,7 @@ public class MyDBHelper extends SQLiteOpenHelper{
 
     public ArrayList<DataModel> fetchDataForDate(String date) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = {KEY_ID, KEY_TIME, KEY_STEPS, KEY_DISTANCE, KEY_CAL, KEY_DATE};
+        String[] columns = {KEY_ID, KEY_TIME, KEY_STEPS, KEY_DISTANCE, KEY_CAL, KEY_DATE,KEY_savingTime,KEY_F};
 
         // Use a WHERE clause to filter data based on the provided date
         String selection = KEY_DATE + " = ?";
@@ -108,6 +110,8 @@ public class MyDBHelper extends SQLiteOpenHelper{
             model.distance = cursor.getString(3);
             model.calories = cursor.getString(4);
             model.date = cursor.getString(5);
+            model.savingTime= cursor.getString(6);
+            model.F= cursor.getString(7);
 
             arrData.add(model);
         }

@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,16 +15,13 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -37,13 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.prathvihan1008.quickwalk.MainActivity;
 import com.prathvihan1008.quickwalk.MyDBHelper;
 import com.prathvihan1008.quickwalk.OnStartButtonClickListener;
@@ -65,7 +54,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
 
 
     private TextView distance,calories,tvTimer,notation;
-    private ImageView ivPauseResume,stopbtn;
+    private ImageView ivPauseResume,savebtn;
     private long startTime = 0L;
     private long elapsedTime = 0L;
     private boolean isRunning = false;
@@ -99,7 +88,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
 
 
         ivPauseResume=view.findViewById(R.id.ivPauseResume);
-        stopbtn=view.findViewById(R.id.stopbtn);
+        savebtn=view.findViewById(R.id.savebtn);
 
         progressBar = view.findViewById(R.id.progressBar);
         countdownText = view.findViewById(R.id.countdown_text);
@@ -157,10 +146,10 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
 
 
 
-        stopbtn.setOnClickListener(new View.OnClickListener() {
+        savebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onStopClick(v);
+                onSaveClick(v);
             }
         });
 
@@ -283,7 +272,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
         if (isRunning) {
             // Pause
             isRunning = false;
-            stopbtn.setVisibility(View.VISIBLE);
+            savebtn.setVisibility(View.VISIBLE);
 
             handler.removeCallbacks(updateTimerTask);
             ivPauseResume.setImageResource(R.drawable.resume);
@@ -309,7 +298,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
 
             }
 
-            stopbtn.setVisibility(View.INVISIBLE);
+            savebtn.setVisibility(View.GONE);
 
             // startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
             //handler.post(updateTimerTask);
@@ -345,79 +334,43 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
         getActivity().startService(intent);
     }
 
-    public void onStopClick(View view) {
+    public void onSaveClick(View view) {
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.setFlagRunning(false);
         }
 
+
         stopStepCountingService();//stop the service
+        savebtn.setVisibility(View.GONE);
 
 
         ivPauseResume.setImageResource(R.drawable.resume);
+        saveDataToDB();
+        isRunning = false;
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Save Data");
-        builder.setMessage("Do you want to save the data?");
+        handler.removeCallbacks(updateTimerTask);
+        startTime = 0L;
+        elapsedTime = 0L;
+        tvTimer.setText("00:00");
+        distance.setText("0.00");
+        calories.setText("0.00");
+        notation.setText("Start");
+
+        previewsTotalSteps = totalSteps;
+        steps.setText(String.valueOf(0));
+        progressBar.setProgress(0);
+
+        resetSteps();
+        unregisterSensor();
+        halfgoalReached=false;
+        goalReached=false;
+
+
 
 
 
         // Set up the buttons
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User clicked Yes, save data to DBMS
-                saveDataToDB();
-                isRunning = false;
-
-                handler.removeCallbacks(updateTimerTask);
-                startTime = 0L;
-                elapsedTime = 0L;
-                tvTimer.setText("00:00");
-                distance.setText("0.00");
-                calories.setText("0.00");
-                notation.setText("Start");
-
-                previewsTotalSteps = totalSteps;
-                steps.setText(String.valueOf(0));
-                progressBar.setProgress(0);
-
-                resetSteps();
-                unregisterSensor();
-                halfgoalReached=false;
-                goalReached=false;
-
-
-            }
-        });
-
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User clicked No, do nothing or handle accordingly
-                isRunning = false;
-
-                handler.removeCallbacks(updateTimerTask);
-                startTime = 0L;
-                elapsedTime = 0L;
-                tvTimer.setText("00:00");
-                distance.setText("0.00");
-                calories.setText("0.00");
-                notation.setText("Start");
-
-                previewsTotalSteps = totalSteps;
-                steps.setText(String.valueOf(0));
-                progressBar.setProgress(0);
-
-                resetSteps();
-                unregisterSensor();
-                halfgoalReached=false;
-                goalReached=false;
-
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
 
 
     }
@@ -436,7 +389,7 @@ public class JogFragment extends Fragment implements SensorEventListener,TextToS
         String currentDate = sdfDate.format(new Date());
         String savingTime = sdfTime.format(new Date());
 
-        dbHelper.addData(time, steps, distance, calories,currentDate,savingTime);
+        dbHelper.addData(time, steps, distance, calories,currentDate,savingTime, "2");
         showToast("Data saved");
 
         // Optionally, you can perform additional actions after insertion

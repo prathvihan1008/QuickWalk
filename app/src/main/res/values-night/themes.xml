@@ -4,6 +4,7 @@
         <!-- Customize your dark theme here. -->
         <item name="backgroundColor">@color/black</item>
         <item name="text_color">@color/white</item>
+        <item name="backgroundColorOpp">@color/white</item>
         <item name="colorPrimary">@color/custom_primary</item>
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>

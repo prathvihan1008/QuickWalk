@@ -2,14 +2,9 @@ package com.prathvihan1008.quickwalk.fragments;
 
 import static android.content.Context.SENSOR_SERVICE;
 
-import static java.lang.Boolean.TRUE;
-
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,14 +18,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -38,16 +31,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.prathvihan1008.quickwalk.MainActivity;
 import com.prathvihan1008.quickwalk.MyDBHelper;
 import com.prathvihan1008.quickwalk.OnStartButtonClickListener;
@@ -68,8 +53,9 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
     private TextView steps;
     private EditText goalEditText;
 
+
     private TextView distance, calories, tvTimer, notation;
-    private ImageView ivPauseResume, stopbtn;
+    private ImageView ivPauseResume, savebtn;
     private long startTime = 0L;
     private long elapsedTime = 0L;
     private boolean isRunning = false;
@@ -106,7 +92,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         tvTimer = view.findViewById(R.id.tvTimer);
         notation = view.findViewById(R.id.notation);
         ivPauseResume = view.findViewById(R.id.ivPauseResume);
-        stopbtn = view.findViewById(R.id.stopbtn);
+        savebtn = view.findViewById(R.id.savebtn);
 
         progressBar = view.findViewById(R.id.progressBar);
 
@@ -186,10 +172,10 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         });
 
 
-        stopbtn.setOnClickListener(new View.OnClickListener() {
+        savebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onStopClick(v);
+                onSaveClick(v);
             }
         });
 
@@ -351,7 +337,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
             isRunning = false;
 
-            stopbtn.setVisibility(View.VISIBLE);
+            savebtn.setVisibility(View.VISIBLE);
            // glassyView.setVisibility(View.INVISIBLE);
 
 
@@ -381,7 +367,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
 
             }
 
-            stopbtn.setVisibility(View.INVISIBLE);
+            savebtn.setVisibility(View.GONE);
 
            // startTime = SystemClock.elapsedRealtime() - elapsedTime;  // Adjust for paused time
             //handler.post(updateTimerTask);
@@ -419,81 +405,42 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         intent.setAction(StepCountingService.ACTION_STOP_SERVICE);
         getActivity().startService(intent);
     }
-    public void onStopClick(View view) {
+    public void onSaveClick(View view) {
         // Reset timer and step count
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             mainActivity.setFlagRunning(false);
         }
       stopStepCountingService();
+        savebtn.setVisibility(View.GONE);
 
 
 
         ivPauseResume.setImageResource(R.drawable.resume);
+        saveDataToDB();
+        isRunning = false;
+        handler.removeCallbacks(updateTimerTask);
+        startTime = 0L;
+        elapsedTime = 0L;
+        tvTimer.setText("00:00");
+        distance.setText("0.00");
+        calories.setText("0.00");
+        notation.setText("Start");
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Save Data");
-        builder.setMessage("Do you want to save the data?");
+        previewsTotalSteps = totalSteps;
+        steps.setText(String.valueOf(0));
+        progressBar.setProgress(0);
 
-
-        // Set up the buttons
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User clicked Yes, save data to DBMS
-                saveDataToDB();
-                isRunning = false;
-                handler.removeCallbacks(updateTimerTask);
-                startTime = 0L;
-                elapsedTime = 0L;
-                tvTimer.setText("00:00");
-                distance.setText("0.00");
-                calories.setText("0.00");
-                notation.setText("Start");
-
-                previewsTotalSteps = totalSteps;
-                steps.setText(String.valueOf(0));
-                progressBar.setProgress(0);
-
-                resetSteps();
-                unregisterSensor();
-                halfgoalReached = false;
-                goalReached = false;
-               // Toast.makeText(getContext(), "Data stored successfully", Toast.LENGTH_LONG).show();
+        resetSteps();
+        unregisterSensor();
+        halfgoalReached = false;
+        goalReached = false;}
 
 
-            }
-        });
-
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User clicked No, do nothing or handle accordingly
-                isRunning = false;
-                handler.removeCallbacks(updateTimerTask);
-                startTime = 0L;
-                elapsedTime = 0L;
-                tvTimer.setText("00:00");
-                distance.setText("0.00");
-                calories.setText("0.00");
-                notation.setText("Start");
-
-                previewsTotalSteps = totalSteps;
-                steps.setText(String.valueOf(0));
-                progressBar.setProgress(0);
-
-                resetSteps();
-                unregisterSensor();
-                halfgoalReached = false;
-                goalReached = false;
-
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
 
 
-    }
+
+
 
     private void saveDataToDB() {
         // Obtain the required data (time, steps, distance, calories) from your fragment
@@ -509,7 +456,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         String currentDate = sdfDate.format(new Date());
         String savingTime = sdfTime.format(new Date());
 
-        dbHelper.addData(time, steps, distance, calories, currentDate, savingTime);
+        dbHelper.addData(time, steps, distance, calories, currentDate, savingTime,"1");
         showToast("Data saved");
       //  Toast.makeText(getContext(),"Data Saved ",Toast.LENGTH_LONG).show();
 

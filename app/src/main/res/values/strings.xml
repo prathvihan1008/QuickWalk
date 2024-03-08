@@ -28,7 +28,7 @@
     <string name="step_counter">step counter</string>
     <string name="speed_icon_description">speed icon</string>
     <string name="m_s">m/s</string>
-    <string name="distance_miles">distance(miles)</string>
+    <string name="distance_miles">distance(mile)</string>
     <string name="_0_0_miles">0.0</string>
     <string name="date">Date:</string>
     <string name="time">Time:</string>
@@ -39,5 +39,6 @@
     <string name="sound_on_off">sound on off</string>
     <string name="stats">stats</string>
     <string name="back_button">back button</string>
+    <string name="recent">Most recent</string>
 
 </resources>
