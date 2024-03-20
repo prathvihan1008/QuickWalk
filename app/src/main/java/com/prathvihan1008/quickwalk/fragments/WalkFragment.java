@@ -51,7 +51,7 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
     private int previewsTotalSteps = 0;
     private ProgressBar progressBar;
     private TextView steps;
-    private EditText goalEditText;
+
 
 
     private TextView distance, calories, tvTimer, notation;
@@ -274,23 +274,10 @@ public class WalkFragment extends Fragment implements SensorEventListener,TextTo
         super.onDestroyView();
     }
 
-    // Method to hide keyboard and clear focus
-    private void hideKeyboardAndClearFocus() {
-        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(goalEditText.getWindowToken(), 0);
-        goalEditText.clearFocus();
-    }
 
 
     // Method to update progress bar based on user-entered goal
-    private void updateProgressBar() {
-        String goalText = goalEditText.getText().toString();
-        if (!TextUtils.isEmpty(goalText)) {
-            int goalValue = Integer.parseInt(goalText);
-            progressBar.setMax(goalValue);
-            progressBar.setProgress(0);
-        }
-    }
+
 
 
     public void onResume() {

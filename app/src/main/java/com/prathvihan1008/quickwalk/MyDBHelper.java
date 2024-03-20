@@ -87,13 +87,13 @@ public class MyDBHelper extends SQLiteOpenHelper{
        // db.close(); // Closing database connection
     }
 
-    public ArrayList<DataModel> fetchDataForDate(String date) {
+    public ArrayList<DataModel> fetchDataForDate(String date, int frag) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = {KEY_ID, KEY_TIME, KEY_STEPS, KEY_DISTANCE, KEY_CAL, KEY_DATE,KEY_savingTime,KEY_F};
+        String[] columns = {KEY_ID, KEY_TIME, KEY_STEPS, KEY_DISTANCE, KEY_CAL, KEY_DATE, KEY_savingTime, KEY_F};
 
-        // Use a WHERE clause to filter data based on the provided date
-        String selection = KEY_DATE + " = ?";
-        String[] selectionArgs = {date};
+        // Use a WHERE clause to filter data based on the provided date and KEY_F value
+        String selection = KEY_DATE + " = ? AND " + KEY_F + " = ?";
+        String[] selectionArgs = {date, String.valueOf(frag)};
 
         // ORDER BY both date and savingTime in descending order
         String orderBy = KEY_DATE + " DESC, " + KEY_savingTime + " DESC";
@@ -110,8 +110,8 @@ public class MyDBHelper extends SQLiteOpenHelper{
             model.distance = cursor.getString(3);
             model.calories = cursor.getString(4);
             model.date = cursor.getString(5);
-            model.savingTime= cursor.getString(6);
-            model.F= cursor.getString(7);
+            model.savingTime = cursor.getString(6);
+            model.F = cursor.getString(7);
 
             arrData.add(model);
         }
@@ -119,5 +119,6 @@ public class MyDBHelper extends SQLiteOpenHelper{
         cursor.close();
         return arrData;
     }
+
 
 }

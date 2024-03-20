@@ -1,17 +1,18 @@
 package com.prathvihan1008.quickwalk;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
+
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PowerManager;
+
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -47,18 +48,35 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnStartButtonClickListener  {
     private static final int ACTIVITY_RECOGNITION_PERMISSION_REQUEST_CODE = 123;
-    private ImageView img;
+
     private static final String TAG = "MainActivity";
-    private PowerManager.WakeLock wakeLock;
+
     public boolean isSoundOn=true;
     private ImageView action_sound;
     private ImageView action_bars;
     private boolean flag_running=false;
     private AdView mAdView;
+    private static final String PREF_NAME = "MyPrefs";
+    private static final String KEY_FIRST_TIME = "FirstTime";
+    private boolean permissionRequestHandled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        boolean isFirstTime = prefs.getBoolean(KEY_FIRST_TIME, true);
+
+        if (isFirstTime) {
+            // Display the dialog
+            displayDialog();
+
+            // Store flag indicating app is opened for the first time
+
+        }
+
+
         setContentView(R.layout.activity_main);
         action_sound=findViewById(R.id.action_sound);
         action_bars=findViewById(R.id.action_bars);
@@ -146,11 +164,6 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
             }
         });
 
-
-
-
-
-
         // Initialize the Spinner after the BottomSheetBehavior setup
 
         Spinner customSpinner = findViewById(R.id.customSpinner);
@@ -173,10 +186,7 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            checkAndRequestPermission();
 
-        }
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
@@ -238,17 +248,34 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
 
     }
 
+    private void displayDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("")
+                .setMessage("Turning on the following feature is required for the app to function as expected,\n\n Please select 'Allow' on following screen" )
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // OK button clicked, request the permission
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            checkAndRequestPermission();
 
+                            SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putBoolean(KEY_FIRST_TIME, false);
+                            editor.apply();
 
+                        }
+                    }
+                })
+                .setCancelable(false) // Prevent dialog from being dismissed by clicking outside
+                .show();
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        // Release the wake lock
-        if (wakeLock != null && wakeLock.isHeld()) {
-            wakeLock.release();
-        }
+
+
     }
 
     private void checkAndRequestPermission() {
@@ -272,50 +299,34 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == ACTIVITY_RECOGNITION_PERMISSION_REQUEST_CODE) {
+        if (requestCode == ACTIVITY_RECOGNITION_PERMISSION_REQUEST_CODE && !permissionRequestHandled) {
+            permissionRequestHandled = true;
             // Check if the permission is granted
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, you can proceed with your logic
-               // showToast("Permission granted!");
+                // showToast("Permission granted!");
             } else {
-                // Permission not granted, show a toast and terminate the app
-                showToast("App requires physical activity permission.\nPlease provide it manually to continue");
+                Toast.makeText(this,"Please provide the permission manually :\nclick and hold the app icon-->'app-info'-->permissions",Toast.LENGTH_LONG).show();
                 finish();
+                // Permission denied, handle accordingly
+                // For example, display a message to the user and continue with the app's normal behavior
+                //Toast.makeText(this, "Permission denied, but the app will proceed as usual", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    }
-
-
-
 
 
     private void loadInitialFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-
-
-
         // Replace the fragmentContainer with the HistoryFragment
         Fragment initialFragment = new WalkFragment();
-
-
         fragmentTransaction.replace(R.id.fragmentContainer, initialFragment);
-
-
         // Commit the transaction
         fragmentTransaction.commit();
 
 
     }
-
-
-
-
     private void loadFragment(String selectedItem) {
 
 
@@ -336,8 +347,6 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
             // Handle the default case or show an error
             return;
         }
-
-
         // Replace the current fragment with the new one
         fragmentTransaction.replace(R.id.fragmentContainer, fragment);
        // fragmentTransaction.addToBackStack(null); // Optional: Add to back stack for navigation
@@ -346,8 +355,8 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
 
     }
 
-
     //code for handling onBackPressed
+
 
     public void onBackPressed() {
         // Check if the activity is running (e.g., if the sensor is registered)
@@ -359,6 +368,19 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
             // If the activity is not running, allow the default behavior (destroy the activity)
             super.onBackPressed();
         }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+       // Toast.makeText(this,"resume",Toast.LENGTH_LONG).show();
+        // Check and request permission if not granted
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        boolean isFirstTime = prefs.getBoolean(KEY_FIRST_TIME, true);
+        if(!isFirstTime){
+            checkAndRequestPermission();
+
+        }
+
     }
 
     private void navigateToHomeScreen() {
@@ -372,25 +394,7 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
         this.flag_running = running;
     }
 
-    private void showExitConfirmationDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to exit?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        MainActivity.this.onBackPressed();
-                        finish();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User clicked "No", do nothing or dismiss the dialog
-                        dialog.dismiss();
-                    }
-                });
 
-        // Create and show the AlertDialog
-        builder.create().show();
-    }
 
     @Override
     public void onStartButtonClicked() {

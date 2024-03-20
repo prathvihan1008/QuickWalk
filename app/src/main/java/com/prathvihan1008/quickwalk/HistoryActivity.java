@@ -20,6 +20,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,7 @@ import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.Calendar;
 import java.util.List;
@@ -46,6 +48,10 @@ public class HistoryActivity extends AppCompatActivity {
     private Calendar calendar;
     private ImageView action_back;
 
+    private int wFrag=1;
+
+
+
 
 
 
@@ -56,7 +62,12 @@ public class HistoryActivity extends AppCompatActivity {
 
 
 
+
         setContentView(R.layout.history_fragment_layout);
+
+
+
+
 
         //it keeps the screen awake (only applied to particular activity not whole device)
         action_back=findViewById(R.id.action_back);
@@ -79,15 +90,7 @@ public class HistoryActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
         //adds
-
-
-
         AdRequest adRequest = new AdRequest.Builder().build();
         //This is Asynchronous method:which executes irespective of the flow of main program sequential instructions
         InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest,
@@ -158,7 +161,59 @@ public class HistoryActivity extends AppCompatActivity {
 
         updateData(Calendar.getInstance().get(Calendar.YEAR),
                 Calendar.getInstance().get(Calendar.MONTH),
-                Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+                Calendar.getInstance().get(Calendar.DAY_OF_MONTH),1);
+
+        //tablayout
+
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Walk"));
+        tabLayout.addTab(tabLayout.newTab().setText("Jog"));
+        tabLayout.addTab(tabLayout.newTab().setText("Bike"));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                // Assuming you have a TextView named selectedDateTextView
+                String dateText = selectedDateTextView.getText().toString();
+
+// Split the date text by "/"
+                String[] dateParts = dateText.split("/");//String.split return the string array
+
+// Parse day, month, and year from the split parts
+                int day = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]) - 1; // Subtract 1 as months are zero-indexed
+                int year = Integer.parseInt(dateParts[2]);
+
+                // Handle tab selection
+                switch (tab.getPosition()) {
+                    case 0:
+                        // Update data for walk activity
+                        updateData(year,month,day,1);
+                        wFrag=1;
+                        break;
+                    case 1:
+                        // Updatedata for jog activity
+                        updateData(year,month,day,2);
+                        wFrag=2;
+                        break;
+                    case 2:
+                        // Update data for bike activity
+                        updateData(year,month,day,3);
+                        wFrag=3;
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                // Handle tab unselection
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // Handle tab reselection
+            }
+        });
+
 
 
     }
@@ -213,9 +268,18 @@ public class HistoryActivity extends AppCompatActivity {
 
     private void showDatePickerDialog() {
         // Get current date
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+//        int year = calendar.get(Calendar.YEAR);
+//        int month = calendar.get(Calendar.MONTH);
+//        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        String dateText = selectedDateTextView.getText().toString();
+
+// Split the date text by "/"
+        String[] dateParts = dateText.split("/");//String.split return the string array
+
+// Parse day, month, and year from the split parts
+        int dayOfMonth = Integer.parseInt(dateParts[0]);
+        int month = Integer.parseInt(dateParts[1]) - 1; // Subtract 1 as months are zero-indexed
+        int year= Integer.parseInt(dateParts[2]);
 
         // Create DatePickerDialog and set its listener
         DatePickerDialog datePickerDialog = new DatePickerDialog(this,
@@ -225,24 +289,45 @@ public class HistoryActivity extends AppCompatActivity {
                                           int monthOfYear, int dayOfMonth) {
                         // Display the selected date in TextView
                         selectedDateTextView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
-                        updateData(year, monthOfYear, dayOfMonth);
+                      if(wFrag==1) {
+                          updateData(year, monthOfYear, dayOfMonth,1);
+
+                      }
+                      else if(wFrag==2){
+                          updateData(year, monthOfYear, dayOfMonth,2);
+
+                        }
+                      else if(wFrag==3){
+                          updateData(year, monthOfYear, dayOfMonth,3);
+                      }
+
+
+
                     }
                 }, year, month, dayOfMonth);
+
+// Set the maximum date to the current date to disable future dates
+        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+
 
         // Show the DatePickerDialog
         datePickerDialog.show();
     }
 
-    private void updateData(int year, int month, int dayOfMonth) {
+    private void updateData(int year, int month, int dayOfMonth ,int frag ){
         // Fetch data based on the selected date
         String selectedDate = formatDate(year, month, dayOfMonth);
-        dataModels = dbHelper.fetchDataForDate(selectedDate);
+        dataModels = dbHelper.fetchDataForDate(selectedDate,frag);
 
         // Update the RecyclerView with the filtered data
         adapter = new DataModelAdapter(dataModels);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         recyclerView.setAdapter(adapter);
+
     }
+
+
     private String formatDate(int year, int month, int dayOfMonth) {
         return String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
     }

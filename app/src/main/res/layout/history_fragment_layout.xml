@@ -46,6 +46,13 @@
             android:textAllCaps="false" />
 
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+      android:layout_marginTop="10dp"
+        android:background="?attr/text_color">
+
+    </View>
 
 
     <!-- Use a FrameLayout to layer views with different elevations -->
@@ -53,78 +60,58 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="4dp"
         android:background="@color/blue"
         android:gravity="center">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/saved_data_will_appear_here"
-            android:textColor="?attr/text_color"
-
-
-            android:textSize="20sp"
-
-            />
-
-
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="vertical"
-
-        android:gravity="center">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/recent"
-            android:textColor="?attr/text_color"
-            android:layout_gravity="center"
-
-
-            android:textSize="18sp"
-
-            />
-        <View
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="?attr/text_color">
-
-        </View>
-
-
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tabMode="fixed"
+            app:tabGravity="fill"/>
 
 
 
     </LinearLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/backgroundColor"
-
-        >
 
 
         <!-- RelativeLayout with elevated background -->
 
 
-        <!-- RecyclerView -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="?attr/backgroundColor"
+        android:layout_height="match_parent">
 
+        <!-- Pretext view -->
+        <TextView
+            android:id="@+id/pretextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Recently saved"
+            android:gravity="center"
+            android:padding="2dp"
+
+            android:textColor="?attr/text_color"/>
+
+        <!-- RecyclerView below pretext -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pretextView"
             android:background="?attr/backgroundColor"
-            android:padding="8dp" />
+            android:padding="8dp"/>
+    </RelativeLayout>
 
 
 
 
-    </FrameLayout>
+
 
 </LinearLayout>
