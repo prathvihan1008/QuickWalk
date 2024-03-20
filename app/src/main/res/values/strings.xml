@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Quick Walk</string>
+    <string name="app_name">Pedometer</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="fast_forward">Fast Forward</string>
