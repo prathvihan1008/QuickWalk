@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
     }
 
     private void displayDialog() {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("")
                 .setMessage("Turning on the following feature is required for the app to function as expected,\n\n Please select 'Allow' on following screen" )
@@ -396,10 +397,11 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
 
 
 
+
     @Override
     public void onStartButtonClicked() {
-// Start the StepCountingService and show notification
-        flag_running=true;
+        // Start the StepCountingService as a foreground service and show notification
+        flag_running = true;
 
         Intent serviceIntent = new Intent(this, StepCountingService.class);
         ContextCompat.startForegroundService(this, serviceIntent);
@@ -408,8 +410,12 @@ public class MainActivity extends AppCompatActivity implements OnStartButtonClic
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Specify the appropriate PendingIntent flags
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Now you can use the pendingIntent as needed, for example, to set it in a notification.
     }
+
 
 
 }

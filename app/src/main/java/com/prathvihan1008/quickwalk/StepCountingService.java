@@ -96,15 +96,19 @@ public class StepCountingService extends Service {
     }
 
     private Notification buildNotification() {
-
+        // Add appropriate flags to the notification intent
         Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        // Specify the appropriate PendingIntent flags
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
                 0,
                 notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
         );
 
+        // Build and return the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.logo2)
                 .setContentTitle("Tracking activity")
@@ -114,6 +118,7 @@ public class StepCountingService extends Service {
 
         return builder.build();
     }
+
 
     public void stopForegroundService() {
         // Stop showing the notification and remove the service from the foreground

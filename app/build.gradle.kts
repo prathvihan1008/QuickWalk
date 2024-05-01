@@ -8,10 +8,10 @@ android {
 
     defaultConfig {
         applicationId = "com.prathvihan1008.quickwalk"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
-        versionCode = 5
-        versionName = "5.0"
+        versionCode = 8
+        versionName = "8.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -5,6 +5,9 @@
     <color name="grey">#6F6F6F</color>
     <color name="back_botton">#000000</color>
     <color name="blue">#00BCD4</color>
+    <color name="light_grey">#24000000</color>
+    <color name="light_black">#52000000</color>
+    <color name="light_white">#7BFFFFFF</color>
 
     <color name="custom_primary">#00BFFE</color>
 

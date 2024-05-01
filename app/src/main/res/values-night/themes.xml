@@ -6,6 +6,7 @@
         <item name="text_color">@color/white</item>
         <item name="backgroundColorOpp">@color/white</item>
         <item name="colorPrimary">@color/custom_primary</item>
+        <item name="light_background">@color/light_white</item>
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 </resources>
